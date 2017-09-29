@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 def read_graph(graph_name):
     graph = nx.DiGraph()
-    ba_graph = nx.random_graphs.barabasi_albert_graph(50,3)
+    ba_graph = nx.random_graphs.barabasi_albert_graph(250,3)
     graph = ba_graph.to_directed()
     return graph
 
