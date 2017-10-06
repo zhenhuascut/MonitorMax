@@ -108,7 +108,9 @@ def Bee_Colony_process(graph, topk=5, batch_num=4, max_find_times = 20):
 	# while max_pro_num > 0:
 	# 	max_pro_num -=1
 	cnt = max_find_times
-	pred_nodes,  all_batch, batch_max_num = [], [], []
+	pred_nodes_set, pred_nodes, all_batch, batch_max_num = set(), [], [], []
+	# pred_nodes_set用于暂时存放该批次节点最大监视集合，并将个数储存在batch_max_num中
+	# all_batch存放各个批次的节点集合
 	for i in range(batch_num):
 		batch_nodes = []
 		for tnode in node_batch[i]:
@@ -126,14 +128,16 @@ def Bee_Colony_process(graph, topk=5, batch_num=4, max_find_times = 20):
 		cnt = cnt - 1
 		for i in range(batch_num):
 			# print str(i) + '次'
-			max_nodes_num, try_time = 0, topk
+			max_nodes_num, try_time = 0, topk*2
+			# 将尝试次数设置为每个批次总结点数的的两倍
 			# print pred_nodes_set
 			while max_nodes_num < len(pred_nodes_set) and try_time > 0:
+				# 选择该批次的某一个节点进行父节点替换
 				choose_ex = random.randint(1, topk)
 				ex_node = all_batch[i][choose_ex-1]
 				# print ex_node
 				# print batch_nodes
-				node_set, new_batch_nodes =  choose_node(node_preds, ex_node, all_batch[i], x_random)
+				node_set, new_batch_nodes = choose_node(node_preds, ex_node, all_batch[i], x_random)
 				max_nodes_num = len(node_set)
 				if max_nodes_num > batch_max_num[i]:
 					# print "再次最大:" + str(max_nodes_num)
