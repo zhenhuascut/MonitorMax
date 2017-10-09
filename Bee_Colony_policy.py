@@ -105,8 +105,6 @@ def Bee_Colony_process(graph, topk=5, batch_num=4, max_find_times = 20):
 	x_random = random_nodes
 	node_batch = [random_nodes[i*topk:(i+1)*topk] for i in range(batch_num)]
 	max_num = 0
-	# while max_pro_num > 0:
-	# 	max_pro_num -=1
 	cnt = max_find_times
 	pred_nodes_set, pred_nodes, all_batch, batch_max_num = set(), [], [], []
 	# pred_nodes_set用于暂时存放该批次节点最大监视集合，并将个数储存在batch_max_num中
