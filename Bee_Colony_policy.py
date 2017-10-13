@@ -47,7 +47,7 @@ def choose_node(node_preds, ex_node, batch_nodes, x_random, max_try_times = 100)
 		for p in each_p:
 			sums = p_sum + p
 			if choose_random >= p_sum and choose_random < sums:
-				bx_node = each_p.index(p)
+				bx_node = ex_node_pred[each_p.index(p)]
 				# print bx_node
 				# bx_node为选择的节点的编号
 				break
@@ -143,21 +143,22 @@ def Bee_Colony_process(graph, topk=5, batch_num=4, max_find_times = 20):
 					all_batch[i] = new_batch_nodes
 					if max_nodes_num > max_num:
 						max_num = max_nodes_num
-						print "当前最大得到提升:" + str(max_num)
-						print new_batch_nodes
+						# print "当前最大得到提升:" + str(max_num)
+						# print new_batch_nodes
 						monitor_max_nodes = all_batch[i]
 						max_nodes_set = node_set
 				try_time = try_time - 1
-	print max_nodes_set
+	# print max_nodes_set
 	return max_nodes_set, monitor_max_nodes
 
 
 if __name__ == '__main__':
-	graph = read_graph(graph_name="")
-	# 进行对比，发现贪心算法和蜂群算法最大监视节点数会一致
-	a = Out_Degree_Max.OutDegreeMax(graph)
-	b = Greedy_Policy.GreedyPolicy(graph)
-	max_nodes_set, monitor_max_nodes = Bee_Colony_process(graph)
-	print '最大算法 ' + str(len(a))
-	print '贪心算法 ' + str(len(b))
-	print '蜂群算法 ' + str(len(max_nodes_set))
+	for i in range(0, 100):
+		graph = read_graph(graph_name="")
+		# 进行对比，发现贪心算法和蜂群算法最大监视节点数会一致
+		a = Out_Degree_Max.OutDegreeMax(graph)
+		b = Greedy_Policy.GreedyPolicy(graph)
+		max_nodes_set, monitor_max_nodes = Bee_Colony_process(graph)
+		print '最大算法 ' + str(len(a))
+		print '贪心算法 ' + str(len(b))
+		print '蜂群算法 ' + str(len(max_nodes_set))

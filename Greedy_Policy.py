@@ -18,10 +18,10 @@ def choose_max(node_preds, pred_nodes_set, choosed_nodes):
     for node in node_preds:
         if node not in choosed_nodes:
             preds = set(node_preds[node])
-            print(preds)
+            # print(preds)
             preds = preds - pred_nodes_set
             preds = preds - choosed_nodes
-            print(preds)
+            # print(preds)
             node_pred_num[node] = len(preds)
             if len(preds)> max_pred_num:
                 max_pred_num = len(preds)
@@ -38,13 +38,13 @@ def GreedyPolicy(graph, topk=5):
     pred_nodes_set = set()
     for i in range(topk):
         choosed_node,max_pred_num = choose_max(node_preds, pred_nodes_set, choosed_nodes)
-        print(choosed_node, max_pred_num)
+        # print(choosed_node, max_pred_num)
         choosed_nodes.add(choosed_node)
         pred_nodes = graph.predecessors(choosed_node)
-        print(pred_nodes)
+        # print(pred_nodes)
         pred_nodes_set = pred_nodes_set.union(set(pred_nodes))
-        print pred_nodes_set
-    print pred_nodes_set
+        # print pred_nodes_set
+    # print pred_nodes_set
 
     return pred_nodes_set
 
