@@ -187,10 +187,12 @@ def batch_ex_dna(node_batches, cro_p=0.25, max_try_time=actual_bits_num):
 			if len(set(new_batch_1)) == topk and len(set(new_batch_2)) == topk:
 				succ_flag = True
 				try:
+					print node_batches
 					node_batches.remove(batch_decode(select_dnas[i]))
 				except:
 					print batch_decode(select_dnas[i])
 				try:
+					print node_batches
 					node_batches.remove(batch_decode(select_dnas[ex_num - 1 - i]))
 				except:
 					print batch_decode(select_dnas[ex_num - 1 - i])
@@ -269,7 +271,7 @@ def GA(graph, max_iter_tiems = 3000):
 	return max_nodes_set
 
 if __name__ == '__main__':
-	graph_node_num = 250 * (10**3)
+	graph_node_num = 250 * (10**2)
 	graph = read_graph(graph_name="")
 	# a = Out_Degree_Max.OutDegreeMax(graph)
 	b = Greedy_Policy.GreedyPolicy(graph)
@@ -280,5 +282,4 @@ if __name__ == '__main__':
 	d = GA(graph)
 	print '遗传算法 ' + str(len(d))
 	# print '最大算法 ' + str(len(a))
-	print '贪心算法 ' + str(len(b))
 	# print '遗传算法 ' + str(len(d))
