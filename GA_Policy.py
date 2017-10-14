@@ -187,14 +187,14 @@ def batch_ex_dna(node_batches, cro_p=0.25, max_try_time=actual_bits_num):
 			if len(set(new_batch_1)) == topk and len(set(new_batch_2)) == topk:
 				succ_flag = True
 				try:
-					print node_batches
 					node_batches.remove(batch_decode(select_dnas[i]))
 				except:
+					print node_batches
 					print batch_decode(select_dnas[i])
 				try:
-					print node_batches
 					node_batches.remove(batch_decode(select_dnas[ex_num - 1 - i]))
 				except:
+					print node_batches
 					print batch_decode(select_dnas[ex_num - 1 - i])
 				node_batches.append(new_batch_1)
 				node_batches.append(new_batch_2)
