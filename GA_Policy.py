@@ -10,11 +10,10 @@ import random
 import Out_Degree_Max
 import Greedy_Policy
 import Bee_Colony_policy
-graph_node_num, topk, batch_num= 250, 5, 4
+graph_node_num, topk, batch_num= 250, 5, 10
 actual_bits_num = len(bin(graph_node_num)[2:])
 node_preds = {}
 out_degrees = []
-
 def read_graph(graph_name):
 	graph = nx.DiGraph()
 	ba_graph = nx.random_graphs.barabasi_albert_graph(graph_node_num, 3)
@@ -103,12 +102,14 @@ def select_survival(after_GA_batchs):
 	all_batch = []
 	for p in select_p:
 		sums += p
-		p_sums.append(sum)
+		p_sums.append(sums)
 	for i in range(batch_num):
 		t = random.random()
 		for j in range(len(p_sums)):
-			if t >= p_sums[j]:
-				all_batch.append(sorted_batch[j][1])
+			if j>0 and t >= p_sums[j-1] and t < p_sums[j]:
+				all_batch.append(sorted_batch[j-1][1])
+				# print all_batch
+				break
 	max_monitor_set = sorted_batch[0][0]
 	max_monitor_nodes = sorted_batch[0][1]
 	# print [len(node_set) for node_set, select_batch in sorted_batch]
@@ -116,7 +117,13 @@ def select_survival(after_GA_batchs):
 
 # 对交叉互换后的各个批次的每个编码以一定概率var_p进行变异操作
 # 该函数保证变异后的批次节点跟原批次节点有所不同
-def batch_Mutation(node_batches, mut_p=0.01, max_try_time=topk * actual_bits_num):
+def batch_Mutation(node_batches, mut_p=0.1, max_try_time=topk * actual_bits_num):
+	# for batch in node_batches:
+	# 	if node_batches.count(batch) > int(round(batch_num * 0.9)):
+	# 		mut_p = 0.3
+	# 		node_batches.remove(batch)
+	# 		node_batches.append(batch)
+	# 		break
 	for i in range(batch_num):
 		mut_flag = False
 		batch_en = batch_encode(node_batches[i])
@@ -179,8 +186,14 @@ def batch_ex_dna(node_batches, cro_p=0.25, max_try_time=actual_bits_num):
 			new_batch_1, new_batch_2 = spe_pro(new_batch_1), spe_pro(new_batch_2)
 			if len(set(new_batch_1)) == topk and len(set(new_batch_2)) == topk:
 				succ_flag = True
-				node_batches.remove(batch_decode(select_dnas[i]))
-				node_batches.remove(batch_decode(select_dnas[ex_num - 1 - i]))
+				try:
+					node_batches.remove(batch_decode(select_dnas[i]))
+				except:
+					print batch_decode(select_dnas[i])
+				try:
+					node_batches.remove(batch_decode(select_dnas[ex_num - 1 - i]))
+				except:
+					print batch_decode(select_dnas[ex_num - 1 - i])
 				node_batches.append(new_batch_1)
 				node_batches.append(new_batch_2)
 				# print '成功交叉互换——原：'
@@ -203,8 +216,8 @@ def get_random_batch(graph):
 	# print random_nodes
 	return node_preds, out_degrees, random_nodes
 
-# 遗传算法主函数，最大迭代次数为50000，收敛点出现在这附近，图越大越提高
-def GA(graph, max_iter_tiems = 50000):
+# 遗传算法主函数，最大迭代次数与变异率成反比，图越大越要提高
+def GA(graph, max_iter_tiems = 3000):
 	node_preds, out_degrees, random_nodes = get_random_batch(graph)
 	node_batch = [random_nodes[i*topk:(i+1)*topk] for i in range(batch_num)]
 	balance_num = 0
@@ -232,6 +245,7 @@ def GA(graph, max_iter_tiems = 50000):
 		for i in range(batch_num):
 			old_set_size, old_node_set = get_pred_node_set(all_batch[i])
 			after_GA_batchs.append((old_node_set, all_batch[i]))
+		monitor_set, monitor_nodes, all_batch = select_survival(after_GA_batchs)
 		all_batch = batch_ex_dna(all_batch)
 		# 再选择群体变异
 		all_batch = batch_Mutation(all_batch)
@@ -240,6 +254,8 @@ def GA(graph, max_iter_tiems = 50000):
 			after_GA_batchs.append((new_node_set, all_batch[i]))
 		# 轮盘赌选择存留的群体
 		monitor_set, monitor_nodes, all_batch = select_survival(after_GA_batchs)
+		# print 'GA_batch:'
+		# print after_GA_batchs
 		# print all_batch
 		if len(max_nodes_set) > len(monitor_set):
 			balance_num += 1
@@ -253,17 +269,16 @@ def GA(graph, max_iter_tiems = 50000):
 	return max_nodes_set
 
 if __name__ == '__main__':
-	for i in range(2, 6):
-		graph_node_num = 250 * (10**i)
-		graph = read_graph(graph_name="")
-		# a = Out_Degree_Max.OutDegreeMax(graph)
-		b = Greedy_Policy.GreedyPolicy(graph)
-		print '贪心算法 ' + str(len(b))
-		max_nodes_set, monitor_max_nodes = Bee_Colony_policy.Bee_Colony_process(graph)
-		print '蜂群算法 ' + str(len(max_nodes_set))
-		print 'strat'
-		d = GA(graph)
-		print '遗传算法 ' + str(len(d))
+	graph_node_num = 250 * (10**3)
+	graph = read_graph(graph_name="")
+	# a = Out_Degree_Max.OutDegreeMax(graph)
+	b = Greedy_Policy.GreedyPolicy(graph)
+	print '贪心算法 ' + str(len(b))
+	# max_nodes_set, monitor_max_nodes = Bee_Colony_policy.Bee_Colony_process(graph)
+	# print '蜂群算法 ' + str(len(max_nodes_set))
+	print 'strat'
+	d = GA(graph)
+	print '遗传算法 ' + str(len(d))
 	# print '最大算法 ' + str(len(a))
-	# print '贪心算法 ' + str(len(b))
+	print '贪心算法 ' + str(len(b))
 	# print '遗传算法 ' + str(len(d))
